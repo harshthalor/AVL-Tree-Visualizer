@@ -127,34 +127,41 @@ class AVLTree {
     }
 
     deleteNode(node, value) {
-        if (!node) return node;
-        if (value < node.value) node.left = this.deleteNode(node.left, value);
-        else if (value > node.value) node.right = this.deleteNode(node.right, value);
-        else {
-            if (!node.left || !node.right) node = node.left || node.right || null;
-            else {
-                const temp = this.minValueNode(node.right);
-                node.value = temp.value;
-                node.right = this.deleteNode(node.right, temp.value);
-            }
-        }
-
-        if (!node) return node;
-        node.height = 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
-        const balance = this.getBalance(node);
-
-        if (balance > 1 && this.getBalance(node.left) >= 0) return this.rotateRight(node);
-        if (balance > 1 && this.getBalance(node.left) < 0) {
-            node.left = this.rotateLeft(node.left);
-            return this.rotateRight(node);
-        }
-        if (balance < -1 && this.getBalance(node.right) <= 0) return this.rotateLeft(node);
-        if (balance < -1 && this.getBalance(node.right) > 0) {
-            node.right = this.rotateRight(node.right);
-            return this.rotateLeft(node);
-        }
+    if (!node) {
+        alert(`Value ${value} not found in the tree.`);
         return node;
     }
+
+    if (value < node.value) node.left = this.deleteNode(node.left, value);
+    else if (value > node.value) node.right = this.deleteNode(node.right, value);
+    else {
+        // Found the node to delete
+        if (!node.left || !node.right) node = node.left || node.right || null;
+        else {
+            const temp = this.minValueNode(node.right);
+            node.value = temp.value;
+            node.right = this.deleteNode(node.right, temp.value);
+        }
+    }
+
+    if (!node) return node;
+
+    node.height = 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
+    const balance = this.getBalance(node);
+
+    if (balance > 1 && this.getBalance(node.left) >= 0) return this.rotateRight(node);
+    if (balance > 1 && this.getBalance(node.left) < 0) {
+        node.left = this.rotateLeft(node.left);
+        return this.rotateRight(node);
+    }
+    if (balance < -1 && this.getBalance(node.right) <= 0) return this.rotateLeft(node);
+    if (balance < -1 && this.getBalance(node.right) > 0) {
+        node.right = this.rotateRight(node.right);
+        return this.rotateLeft(node);
+    }
+    return node;
+}
+
 
     // --- OPERATION QUEUE ---
     enqueueOperation(type, value) {
@@ -291,16 +298,23 @@ class AVLTree {
 const tree = new AVLTree();
 
 document.getElementById('insertBtn').addEventListener('click', () => {
-    const val = parseInt(document.getElementById('valueInput').value);
+    const input = document.getElementById('valueInput');
+    const val = parseInt(input.value);
     if (!isNaN(val)) tree.enqueueOperation("insert", val);
+    input.value = ""; // Clear input
 });
 
 document.getElementById('deleteBtn').addEventListener('click', () => {
-    const val = parseInt(document.getElementById('valueInput').value);
+    const input = document.getElementById('valueInput');
+    const val = parseInt(input.value);
     if (!isNaN(val)) tree.enqueueOperation("delete", val);
+    input.value = ""; // Clear input
 });
 
 document.getElementById('searchBtn').addEventListener('click', () => {
-    const val = parseInt(document.getElementById('valueInput').value);
+    const input = document.getElementById('valueInput');
+    const val = parseInt(input.value);
     if (!isNaN(val)) tree.enqueueOperation("search", val);
+    input.value = ""; // Clear input
 });
+
